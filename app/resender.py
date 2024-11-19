@@ -6,14 +6,14 @@ from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
 from subscription_utils import subscriptions, exception_subscriptions
 
-with open('credentials.json', 'r') as file:
+with open('mounted/credentials.json', 'r') as file:
     data = json.load(file)
 
 api_id = data['api_id']
 api_hash = data['api_hash']
 phone_number = data['phone_number']
 
-client = TelegramClient('session_name', api_id, api_hash)
+client = TelegramClient('mounted/session_name', api_id, api_hash)
 
 async def message_fetcher():
     await client.start()
