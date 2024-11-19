@@ -3,7 +3,7 @@ import asyncio
 from subscription_utils import add_subscription, clear_subscriptions
 
 async def synch_subscribers():
-    url = 'https://127.0.0.1/api/subscriptions'  # Замените на ваш URL
+    url = 'http://127.0.0.1:8080/api/subscriptions'
 
     while True:
         try:
@@ -13,8 +13,8 @@ async def synch_subscribers():
 
             clear_subscriptions()
             for item in data:
-                add_subscription({item['subscriber']}, {item['subscription']}, {item['keyword']})
-                print(f"Subscriber: {item['subscriber']}, Subscription: {item['subscription']}, Keyword: {item['keyword']}")
+                add_subscription(item['subscriber'], item['subscription'], item['keyword'])
+                print(f"Sync get | Subscriber: {item['subscriber']}, Subscription: {item['subscription']}, Keyword: {item['keyword']}")
 
         except requests.exceptions.HTTPError as http_err:
             print(f"HTTP error occurred: {http_err}")
@@ -23,4 +23,4 @@ async def synch_subscribers():
         except ValueError as json_err:
             print(f"JSON decode error: {json_err}")
 
-        await asyncio.sleep(10)
+        await asyncio.sleep(100)

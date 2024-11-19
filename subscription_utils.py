@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 subscriptions = defaultdict(lambda: defaultdict(set))
+exception_subscriptions = set()
 
 def add_subscription(subscriber, subscription, keyword):
     subscriptions[subscriber][subscription].add(keyword)
