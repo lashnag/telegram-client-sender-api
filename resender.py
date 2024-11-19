@@ -2,6 +2,7 @@ import asyncio
 import json
 from datetime import datetime, timedelta
 from telethon.errors.rpcerrorlist import UsernameInvalidError
+from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
 from subscription_utils import subscriptions, exception_subscriptions
 
@@ -32,6 +33,7 @@ async def message_fetcher():
                         print(f"No group error: {no_group}, added to ignore list")
                         continue
 
+                    await join_public_group(group)
                     print(f"Check messages for subscriber: {recipient_username}, subscription: {group_username}, keyword: {keywords}")
                     async for message in client.iter_messages(group, limit=100):
                         if message.date > time_limit and message.text:
@@ -46,3 +48,12 @@ async def message_fetcher():
 
         await asyncio.sleep(10)
 
+
+async def join_public_group(group_username):
+    await client.start(phone_number)
+
+    try:
+        await client(JoinChannelRequest(group_username))
+    except Exception as e:
+        exception_subscriptions.add(group_username)
+        print(f"An error occurred when trying to join the group: {group_username} {e}, added to ignore list")
