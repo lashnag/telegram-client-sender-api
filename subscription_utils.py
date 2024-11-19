@@ -35,3 +35,6 @@ def remove_keyword(recipient_username, group_username, keyword):
             del subscriptions[recipient_username][group_username]
         return True
     return False
+
+def clear_subscriptions():
+    subscriptions.clear()
