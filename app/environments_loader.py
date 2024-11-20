@@ -26,4 +26,4 @@ def get_backend_path():
         return "http://127.0.0.1:8080/api/subscriptions"
 
     except FileNotFoundError:
-        return "http://forwarder_backend_application:8080/api/subscriptions"
+        return "http://backend:8080/api/subscriptions"
