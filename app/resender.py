@@ -8,7 +8,7 @@ from environments_loader import load_credentials
 
 api_id, api_hash, phone_number = load_credentials()
 
-client = TelegramClient('mounted/session_name', api_id, api_hash)
+client = TelegramClient('../mounted/session_name', api_id, api_hash)
 
 async def message_fetcher():
     await client.start()
