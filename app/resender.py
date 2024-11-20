@@ -4,7 +4,7 @@ from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
 from subscription_utils import subscriptions, exception_subscriptions
-from credentials_loader import load_credentials
+from environments_loader import load_credentials
 
 api_id, api_hash, phone_number = load_credentials()
 

@@ -1,9 +1,10 @@
 import requests
 import asyncio
 from subscription_utils import add_subscription, clear_subscriptions
+from environments_loader import get_backend_path
 
 async def synch_subscribers():
-    url = 'http://127.0.0.1:8080/api/subscriptions'
+    url = get_backend_path()
 
     while True:
         try:
