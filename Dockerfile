@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app /app
 
-CMD ["python", "main.py"]
+CMD ["sh", "-c", "sleep 45 && python main.py"]
