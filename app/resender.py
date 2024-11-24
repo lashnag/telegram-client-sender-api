@@ -29,20 +29,24 @@ async def message_fetcher():
                         group = await client.get_entity(group_username)
                     except UsernameInvalidError as no_group:
                         exception_subscriptions.add(no_group.request.username)
+                        print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                         print(f"No group error: {no_group}, added to ignore list")
                         continue
 
                     await join_public_group(group)
+                    print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                     print(f"Check messages for subscriber: {recipient_username}, subscription: {group_username}, keyword: {keywords}")
                     async for message in client.iter_messages(group, limit=100):
                         if message.date > time_limit and message.text:
                             for keyword in keywords:
                                 if keyword.lower() in message.text.lower():
                                     await client.send_message(recipient_username, message.text)
+                                    print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                                     print(f'Message sent to {recipient_username}: "{message.text}"')
                                     break
 
         except Exception as error:
+            print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
             print(f"Common error: {error}")
 
         await asyncio.sleep(10)
@@ -55,4 +59,5 @@ async def join_public_group(group_username):
         await client(JoinChannelRequest(group_username))
     except Exception as e:
         exception_subscriptions.add(group_username)
+        print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print(f"An error occurred when trying to join the group: {group_username} {e}, added to ignore list")

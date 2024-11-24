@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from telethon import TelegramClient
 from telethon.sessions import StringSession
 import os
@@ -12,6 +14,7 @@ client = TelegramClient(session_string, api_id, api_hash)
 
 client.start(phone_number)
 session_str = client.session.save()
+print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 print("Строка сессии:", session_str)
 
 if not os.path.exists("../mounted"):
