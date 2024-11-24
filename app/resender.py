@@ -9,7 +9,7 @@ from telethon.sessions import StringSession
 
 api_id, api_hash, phone_number = load_credentials()
 
-with open("../mounted/session.txt", "r", encoding="utf-8") as file:
+with open("mounted/session.txt", "r", encoding="utf-8") as file:
     session_string = file.read()
 
 client = TelegramClient(StringSession(session_string), api_id, api_hash)

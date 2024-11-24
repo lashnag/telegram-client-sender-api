@@ -3,7 +3,7 @@ import os
 
 def load_credentials():
     try:
-        with open('credentials.json', 'r') as file:
+        with open('app/credentials.json', 'r') as file:
             data = json.load(file)
 
         print(f"Developer mode")
