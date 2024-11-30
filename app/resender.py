@@ -1,4 +1,5 @@
 import asyncio
+import re
 from datetime import datetime, timedelta
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
@@ -39,7 +40,9 @@ async def message_fetcher():
                     async for message in client.iter_messages(group, limit=100):
                         if message.date > time_limit and message.text:
                             for keyword in keywords:
-                                if keyword.lower() in message.text.lower():
+                                words_in_message = re.findall(r'\b\w+\b', message.text.lower())
+                                words_in_keyword = re.findall(r'\b\w+\b', keyword.lower())
+                                if all(word in words_in_message for word in words_in_keyword):
                                     await client.send_message(recipient_username, message.text)
                                     print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                                     print(f'Message sent to {recipient_username}: "{message.text}"')
