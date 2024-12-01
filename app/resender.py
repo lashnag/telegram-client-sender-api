@@ -16,14 +16,12 @@ with open("mounted/session.txt", "r", encoding="utf-8") as file:
 
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
 russian_stemmer = SnowballStemmer("russian")
-seconds_interval = 10
+processed_message_ids = set()
 
 async def message_fetcher():
     await client.start(phone_number)
     while True:
         try:
-            now = datetime.now().astimezone()
-            time_limit = now - timedelta(seconds=seconds_interval)
             for recipient_username, groups in subscriptions.items():
                 for group_username, keywords in groups.items():
                     if group_username in exception_subscriptions:
@@ -41,7 +39,8 @@ async def message_fetcher():
                     print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                     print(f"Check messages for subscriber: {recipient_username}, subscription: {group_username}, keyword: {keywords}")
                     async for message in client.iter_messages(group, limit=100):
-                        if message.date > time_limit and message.text:
+                        if message.text and message.id not in processed_message_ids:
+                            processed_message_ids.add(message.id)
                             for keyword in keywords:
                                 words_in_message = re.findall(r'\b\w+\b', message.text.lower())
                                 words_in_keyword = re.findall(r'\b\w+\b', keyword.lower())
@@ -57,7 +56,7 @@ async def message_fetcher():
             print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
             print(f"Common error: {error}")
 
-        await asyncio.sleep(seconds_interval)
+        await asyncio.sleep(10)
 
 
 async def join_public_group(group_username):
