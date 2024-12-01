@@ -1,5 +1,6 @@
 import asyncio
 import re
+from nltk.stem.snowball import SnowballStemmer
 from datetime import datetime, timedelta
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
@@ -14,13 +15,14 @@ with open("mounted/session.txt", "r", encoding="utf-8") as file:
     session_string = file.read()
 
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
+russian_stemmer = SnowballStemmer("russian")
 
 async def message_fetcher():
     await client.start(phone_number)
     while True:
         try:
             now = datetime.now().astimezone()
-            time_limit = now - timedelta(seconds=10)
+            time_limit = now - timedelta(seconds=100)
             for recipient_username, groups in subscriptions.items():
                 for group_username, keywords in groups.items():
                     if group_username in exception_subscriptions:
@@ -42,7 +44,9 @@ async def message_fetcher():
                             for keyword in keywords:
                                 words_in_message = re.findall(r'\b\w+\b', message.text.lower())
                                 words_in_keyword = re.findall(r'\b\w+\b', keyword.lower())
-                                if all(word in words_in_message for word in words_in_keyword):
+                                stems_in_message = [russian_stemmer.stem(token) for token in words_in_message if token.isalpha()]
+                                stems_in_keyword = [russian_stemmer.stem(token) for token in words_in_keyword if token.isalpha()]
+                                if all(stem in stems_in_message for stem in stems_in_keyword):
                                     await client.send_message(recipient_username, message.text)
                                     print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
                                     print(f'Message sent to {recipient_username}: "{message.text}"')
@@ -52,7 +56,7 @@ async def message_fetcher():
             print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
             print(f"Common error: {error}")
 
-        await asyncio.sleep(10)
+        await asyncio.sleep(100)
 
 
 async def join_public_group(group_username):
