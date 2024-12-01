@@ -16,13 +16,14 @@ with open("mounted/session.txt", "r", encoding="utf-8") as file:
 
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
 russian_stemmer = SnowballStemmer("russian")
+seconds_interval = 10
 
 async def message_fetcher():
     await client.start(phone_number)
     while True:
         try:
             now = datetime.now().astimezone()
-            time_limit = now - timedelta(seconds=100)
+            time_limit = now - timedelta(seconds=seconds_interval)
             for recipient_username, groups in subscriptions.items():
                 for group_username, keywords in groups.items():
                     if group_username in exception_subscriptions:
@@ -56,7 +57,7 @@ async def message_fetcher():
             print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
             print(f"Common error: {error}")
 
-        await asyncio.sleep(100)
+        await asyncio.sleep(seconds_interval)
 
 
 async def join_public_group(group_username):
