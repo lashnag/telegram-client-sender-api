@@ -1,11 +1,11 @@
 import asyncio
 import re
 from nltk.stem.snowball import SnowballStemmer
-from datetime import datetime, timedelta
+from datetime import datetime
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
-from subscription_utils import subscriptions, exception_subscriptions
+from subscription_utils import subscriptions, exception_subscriptions, add_processed_message, is_message_processed
 from environments_loader import load_credentials
 from telethon.sessions import StringSession
 
@@ -16,19 +16,18 @@ with open("mounted/session.txt", "r", encoding="utf-8") as file:
 
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
 russian_stemmer = SnowballStemmer("russian")
-processed_message_ids = set()
 
 async def message_fetcher():
     await client.start(phone_number)
     while True:
         try:
-            for recipient_username, groups in subscriptions.items():
-                for group_username, keywords in groups.items():
-                    if group_username in exception_subscriptions:
+            for subscriber, groups in subscriptions.items():
+                for subscription, keywords in groups.items():
+                    if subscription in exception_subscriptions:
                         continue
 
                     try:
-                        group = await client.get_entity(group_username)
+                        group = await client.get_entity(subscription)
                     except UsernameInvalidError as no_group:
                         exception_subscriptions.add(no_group.request.username)
                         print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -37,19 +36,19 @@ async def message_fetcher():
 
                     await join_public_group(group)
                     print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                    print(f"Check messages for subscriber: {recipient_username}, subscription: {group_username}, keyword: {keywords}")
-                    async for message in client.iter_messages(group, limit=100):
-                        if message.text and message.id not in processed_message_ids:
-                            processed_message_ids.add(message.id)
+                    print(f"Check messages for subscriber: {subscriber}, subscription: {subscription}, keyword: {keywords}")
+                    async for message in client.iter_messages(group, limit=10):
+                        if message.text and not is_message_processed(subscriber, subscription, message.id):
+                            add_processed_message(subscriber, subscription, message.id)
                             for keyword in keywords:
                                 words_in_message = re.findall(r'\b\w+\b', message.text.lower())
                                 words_in_keyword = re.findall(r'\b\w+\b', keyword.lower())
                                 stems_in_message = [russian_stemmer.stem(token) for token in words_in_message if token.isalpha()]
                                 stems_in_keyword = [russian_stemmer.stem(token) for token in words_in_keyword if token.isalpha()]
                                 if all(stem in stems_in_message for stem in stems_in_keyword):
-                                    await client.send_message(recipient_username, message.text)
+                                    await client.send_message(subscriber, message.text)
                                     print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                                    print(f'Message sent to {recipient_username}: "{message.text}"')
+                                    print(f'Message sent to {subscriber}: "{message.text}"')
                                     break
 
         except Exception as error:
