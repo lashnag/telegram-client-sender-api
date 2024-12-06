@@ -30,7 +30,7 @@ async def message_fetcher():
                         group = await client.get_entity(subscription)
                     except UsernameInvalidError as no_group:
                         exception_subscriptions.add(no_group.request.username)
-                        logging.warn(f"No group error: {no_group}, added to ignore list")
+                        logging.warn(f"No group error: {no_group}, added to ignore list {no_group.request.username}")
                         continue
 
                     await join_public_group(group)

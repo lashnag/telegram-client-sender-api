@@ -7,7 +7,7 @@ def load_credentials():
         with open('app/credentials.json', 'r') as file:
             data = json.load(file)
 
-        print(f"Developer mode")
+        logging.debug(f"Developer mode")
         return data['api_id'], data['api_hash'], data['phone_number']
 
     except FileNotFoundError:
