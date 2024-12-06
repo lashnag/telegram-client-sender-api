@@ -1,7 +1,7 @@
-from datetime import datetime
-
 import requests
 import asyncio
+import logging
+from datetime import datetime
 from subscription_utils import add_subscription, clear_subscriptions
 from environments_loader import get_backend_path
 
@@ -17,17 +17,14 @@ async def synch_subscribers():
             clear_subscriptions()
             for item in data:
                 add_subscription(item['subscriber'], item['subscription'], item['keyword'])
-                print(f"Sync get | Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                print(f"Subscriber: {item['subscriber']}, Subscription: {item['subscription']}, Keyword: {item['keyword']}")
+                logging.info(f"Sync get | Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                logging.info(f"Subscriber: {item['subscriber']}, Subscription: {item['subscription']}, Keyword: {item['keyword']}")
 
         except requests.exceptions.HTTPError as http_err:
-            print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-            print(f"HTTP error occurred: {http_err}")
+            logging.error(f"HTTP error occurred: {http_err}", exc_info=True)
         except requests.exceptions.RequestException as err:
-            print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-            print(f"Error occurred: {err}")
+            logging.error(f"Error occurred: {err}", exc_info=True)
         except ValueError as json_err:
-            print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-            print(f"JSON decode error: {json_err}")
+            logging.error(f"JSON decode error: {json_err}", exc_info=True)
 
         await asyncio.sleep(100)

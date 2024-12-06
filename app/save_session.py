@@ -1,8 +1,7 @@
-from datetime import datetime
-
+import os
+import logging
 from telethon import TelegramClient
 from telethon.sessions import StringSession
-import os
 
 api_id = int(input("Введите api_id: "))
 api_hash = input("Введите api_hash: ")
@@ -14,8 +13,7 @@ client = TelegramClient(session_string, api_id, api_hash)
 
 client.start(phone_number)
 session_str = client.session.save()
-print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-print("Строка сессии:", session_str)
+logging.debug(f"Строка сессии: {session_str}")
 
 if not os.path.exists("../mounted"):
     os.makedirs("../mounted")
@@ -23,4 +21,4 @@ if not os.path.exists("../mounted"):
 with open("../mounted/session.txt", "w", encoding="utf-8") as file:
     file.write(session_str)
 
-print("Строка сессии успешно сохранена в файл!")
+logging.debug("Строка сессии успешно сохранена в файл!")

@@ -1,7 +1,7 @@
 import asyncio
 import re
+import logging
 from nltk.stem.snowball import SnowballStemmer
-from datetime import datetime
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
@@ -30,13 +30,11 @@ async def message_fetcher():
                         group = await client.get_entity(subscription)
                     except UsernameInvalidError as no_group:
                         exception_subscriptions.add(no_group.request.username)
-                        print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                        print(f"No group error: {no_group}, added to ignore list")
+                        logging.warn(f"No group error: {no_group}, added to ignore list")
                         continue
 
                     await join_public_group(group)
-                    print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                    print(f"Check messages for subscriber: {subscriber}, subscription: {subscription}, keyword: {keywords}")
+                    logging.info(f"Check messages for subscriber: {subscriber}, subscription: {subscription}, keyword: {keywords}")
                     async for message in client.iter_messages(group, limit=10):
                         if message.text and not is_message_processed(subscriber, subscription, message.id):
                             add_processed_message(subscriber, subscription, message.id)
@@ -47,15 +45,13 @@ async def message_fetcher():
                                 stems_in_keyword = [russian_stemmer.stem(token) for token in words_in_keyword if token.isalpha()]
                                 if all(stem in stems_in_message for stem in stems_in_keyword):
                                     await client.send_message(subscriber, message.text)
-                                    print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                                    print(f'Message sent to {subscriber}: "{message.text}"')
+                                    logging.info(f'Message sent to {subscriber}: "{message.text}"')
                                     break
 
         except Exception as error:
-            print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-            print(f"Common error: {error}")
+            logging.error(f"Common error: {error}", exc_info=True)
 
-        await asyncio.sleep(10)
+        await asyncio.sleep(30)
 
 
 async def join_public_group(group_username):
@@ -65,5 +61,4 @@ async def join_public_group(group_username):
         await client(JoinChannelRequest(group_username))
     except Exception as e:
         exception_subscriptions.add(group_username)
-        print(f"Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"An error occurred when trying to join the group: {group_username} {e}, added to ignore list")
+        logging.warn(f"An error occurred when trying to join the group: {group_username} {e}, added to ignore list")

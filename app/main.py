@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from resender import message_fetcher
 from synch_subscribers import synch_subscribers
 
@@ -7,4 +8,4 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
-    print("Приложение запущено")
+    logging.info("Приложение запущено")

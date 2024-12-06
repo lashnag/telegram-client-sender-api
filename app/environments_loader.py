@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 
 def load_credentials():
     try:
@@ -21,8 +22,8 @@ def load_credentials():
 
 def get_backend_path():
     try:
-        open('credentials.json', 'r')
-        print(f"Developer mode. Start backend on localhost:8080")
+        open('app/credentials.json', 'r')
+        logging.debug(f"Developer mode. Start backend on localhost:8080")
         return "http://127.0.0.1:8080/api/subscriptions"
 
     except FileNotFoundError:
