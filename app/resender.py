@@ -46,7 +46,6 @@ async def message_fetcher():
                                 stems_in_keyword = [russian_stemmer.stem(token) for token in words_in_keyword if token.isalpha()]
                                 if all(stem in stems_in_message for stem in stems_in_keyword):
                                     await message_queue.put((subscriber, message.text))
-                                    logging.info(f'Message sent to {subscriber}: "{message.text}"')
                                     break
 
         except Exception as error:

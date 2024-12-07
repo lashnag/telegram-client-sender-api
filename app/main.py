@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from resender import message_fetcher
+from resender import message_fetcher, message_sender
 from synch_subscribers import synch_subscribers
 
 logging.basicConfig(
@@ -11,7 +11,7 @@ logging.basicConfig(
 logging.getLogger().setLevel(logging.INFO)
 
 async def main():
-    await asyncio.gather(message_fetcher(), synch_subscribers())
+    await asyncio.gather(message_fetcher(), synch_subscribers(), message_sender())
 
 if __name__ == '__main__':
     logging.info("Приложение запущено")
