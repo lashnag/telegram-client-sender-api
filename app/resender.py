@@ -55,14 +55,14 @@ async def message_fetcher():
         await asyncio.sleep(30)
 
 
-async def join_public_group(group_username):
+async def join_public_group(group):
     await client.start(phone_number)
 
     try:
-        await client(JoinChannelRequest(group_username))
+        await client(JoinChannelRequest(group))
     except Exception as e:
-        exception_subscriptions.add(group_username)
-        logging.warn(f"An error occurred when trying to join the group: {group_username} {e}, added to ignore list")
+        exception_subscriptions.add(group.username)
+        logging.warn(f"An error occurred when trying to join the group: {group.username} {e}, added to ignore list")
 
 async def message_sender():
     while True:
