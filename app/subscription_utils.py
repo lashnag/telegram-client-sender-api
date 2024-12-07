@@ -1,11 +1,13 @@
-from collections import defaultdict
-
-subscriptions = defaultdict(lambda: defaultdict(set))
+subscriptions = {}
 exception_subscriptions = set()
 processed_messages = {}
 
-def add_subscription(subscriber, subscription, keyword):
-    subscriptions[subscriber][subscription].add(keyword)
+def add_subscription(subscriber, group, keyword):
+    if group not in subscriptions:
+        subscriptions[group] = {}
+    if subscriber not in subscriptions[group]:
+        subscriptions[group][subscriber] = set()
+    subscriptions[group][subscriber].add(keyword)
 
 def clear_subscriptions():
     subscriptions.clear()

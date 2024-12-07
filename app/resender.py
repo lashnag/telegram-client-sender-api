@@ -22,23 +22,26 @@ async def message_fetcher():
     await client.start(phone_number)
     while True:
         try:
-            for subscriber, groups in subscriptions.items():
-                for subscription, keywords in groups.items():
-                    if subscription in exception_subscriptions:
-                        continue
+            for group_name, subscribers_keywords in subscriptions.items():
+                if group_name in exception_subscriptions:
+                    continue
 
-                    try:
-                        group = await client.get_entity(subscription)
-                    except UsernameInvalidError as no_group:
-                        exception_subscriptions.add(no_group.request.username)
-                        logging.warn(f"No group error: {no_group}, added to ignore list {no_group.request.username}")
-                        continue
+                try:
+                    group = await client.get_entity(group_name)
+                except UsernameInvalidError as no_group:
+                    exception_subscriptions.add(group_name)
+                    logging.warn(f"No group error: {no_group}, added to ignore list {group_name}")
+                    continue
 
-                    await join_public_group(group)
-                    logging.info(f"Check messages for subscriber: {subscriber}, subscription: {subscription}, keyword: {keywords}")
-                    async for message in client.iter_messages(group, limit=10):
-                        if message.text and not is_message_processed(subscriber, subscription, message.id):
-                            add_processed_message(subscriber, subscription, message.id)
+                await join_public_group(group)
+                logging.info(f"Check messages for subscription: {group_name}")
+                async for message in client.iter_messages(group, limit=10):
+                    if message.text:
+                        for subscriber, keywords in subscribers_keywords.items():
+                            if is_message_processed(subscriber, group_name, message.id):
+                                continue
+
+                            add_processed_message(subscriber, group_name, message.id)
                             for keyword in keywords:
                                 words_in_message = re.findall(r'\b\w+\b', message.text.lower())
                                 words_in_keyword = re.findall(r'\b\w+\b', keyword.lower())
