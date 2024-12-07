@@ -15,5 +15,5 @@ async def main():
     asyncio.create_task(synch_subscribers())
 
 if __name__ == '__main__':
-    asyncio.run(main())
     logging.info("Приложение запущено")
+    asyncio.run(main())
