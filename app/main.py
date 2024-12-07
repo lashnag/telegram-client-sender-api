@@ -11,7 +11,8 @@ logging.basicConfig(
 logging.getLogger().setLevel(logging.INFO)
 
 async def main():
-    await asyncio.gather(message_fetcher(), synch_subscribers())
+    asyncio.create_task(message_fetcher())
+    asyncio.create_task(synch_subscribers())
 
 if __name__ == '__main__':
     asyncio.run(main())

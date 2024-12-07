@@ -16,6 +16,7 @@ with open("mounted/session.txt", "r", encoding="utf-8") as file:
 
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
 russian_stemmer = SnowballStemmer("russian")
+message_queue = asyncio.Queue()
 
 async def message_fetcher():
     await client.start(phone_number)
@@ -44,7 +45,7 @@ async def message_fetcher():
                                 stems_in_message = [russian_stemmer.stem(token) for token in words_in_message if token.isalpha()]
                                 stems_in_keyword = [russian_stemmer.stem(token) for token in words_in_keyword if token.isalpha()]
                                 if all(stem in stems_in_message for stem in stems_in_keyword):
-                                    await client.send_message(subscriber, message.text)
+                                    await message_queue.put((subscriber, message.text))
                                     logging.info(f'Message sent to {subscriber}: "{message.text}"')
                                     break
 
@@ -62,3 +63,13 @@ async def join_public_group(group_username):
     except Exception as e:
         exception_subscriptions.add(group_username)
         logging.warn(f"An error occurred when trying to join the group: {group_username} {e}, added to ignore list")
+
+async def message_sender():
+    while True:
+        subscriber, text = await message_queue.get()
+        try:
+            await client.send_message(subscriber, text)
+            logging.info(f'Message sent to {subscriber}: "{text}"')
+        except Exception as e:
+            logging.error(f"Failed to send message to {subscriber}: {e}")
+        await asyncio.sleep(3)
