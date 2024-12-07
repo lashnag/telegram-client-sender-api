@@ -38,6 +38,7 @@ async def message_fetcher():
                 async for message in client.iter_messages(group, limit=10):
                     if message.text:
                         for subscriber, keywords in subscribers_keywords.items():
+                            logging.info(f"Check messages for subscriber: {subscriber}, keywords: {keywords}")
                             if is_message_processed(subscriber, group_name, message.id):
                                 continue
 
@@ -74,4 +75,4 @@ async def message_sender():
             logging.info(f'Message sent to {subscriber}: "{text}"')
         except Exception as e:
             logging.error(f"Failed to send message to {subscriber}: {e}")
-        await asyncio.sleep(3)
+        await asyncio.sleep(30)
