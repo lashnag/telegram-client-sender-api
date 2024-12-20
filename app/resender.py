@@ -52,7 +52,7 @@ async def message_fetcher():
                                 stems_in_message = [russian_stemmer.stem(token) for token in words_in_message if token.isalpha()]
                                 stems_in_keyword = [russian_stemmer.stem(token) for token in words_in_keyword if token.isalpha()]
                                 if all(stem in stems_in_message for stem in stems_in_keyword):
-                                    await message_queue.put((subscriber, message.text))
+                                    await message_queue.put((subscriber, message.text, message.id, group_name))
                                     break
 
         except Exception as error:
@@ -72,9 +72,15 @@ async def join_public_group(group):
 
 async def message_sender():
     while True:
-        subscriber, text = await message_queue.get()
+        subscriber, text, message_id, group_name = await message_queue.get()
+        message_link = f"https://t.me/{group_name}/{message_id}"
+        full_text = (
+            f"{text}\n\n"
+            f"Сообщение переслано из группы: {group_name}\n"
+            f"[Перейти к сообщению]({message_link})"
+        )
         try:
-            await client.send_message(subscriber, text)
+            await client.send_message(subscriber, full_text, link_preview=False)
             logging.info(f'Message sent to {subscriber}: "{text}"')
         except Exception as e:
             logging.error(f"Failed to send message to {subscriber}: {e}")
