@@ -13,6 +13,5 @@ logging.getLogger().setLevel(logging.INFO)
 async def main():
     await asyncio.gather(message_fetcher(), synch_subscribers(), message_sender())
 
-if __name__ == '__main__':
-    logging.info("Приложение запущено")
-    asyncio.run(main())
+logging.info("Приложение запущено")
+asyncio.run(main())

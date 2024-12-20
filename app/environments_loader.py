@@ -2,9 +2,12 @@ import json
 import os
 import logging
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+credentials_file_path = os.path.join(current_dir, 'credentials.json')
+
 def load_credentials():
     try:
-        with open('app/credentials.json', 'r') as file:
+        with open(credentials_file_path, 'r') as file:
             data = json.load(file)
 
         logging.debug(f"Developer mode")
@@ -22,7 +25,7 @@ def load_credentials():
 
 def get_backend_path():
     try:
-        open('app/credentials.json', 'r')
+        open(credentials_file_path, 'r')
         logging.debug(f"Developer mode. Start backend on localhost:8080")
         return "http://127.0.0.1:8080/api/subscriptions"
 

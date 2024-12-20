@@ -1,3 +1,4 @@
+import os
 import asyncio
 import re
 import logging
@@ -11,7 +12,9 @@ from telethon.sessions import StringSession
 
 api_id, api_hash, phone_number = load_credentials()
 
-with open("mounted/session.txt", "r", encoding="utf-8") as file:
+current_dir = os.path.dirname(os.path.abspath(__file__))
+session_file_path = os.path.join(current_dir, '../mounted/session.txt')
+with open(session_file_path, "r", encoding="utf-8") as file:
     session_string = file.read()
 
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
