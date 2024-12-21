@@ -24,14 +24,14 @@ async def fetch_messages(group_name, last_processed_message):
             group = await client.get_entity(group_name)
         except (UsernameInvalidError, ValueError) as no_group:
             logging.warn(f"No group error: {no_group}, {group_name}")
-            raise InvalidGroupException
+            raise InvalidGroupException(f"No group error: {no_group}, {group_name}")
 
         try:
             await client.start(phone_number)
             await client(JoinChannelRequest(group))
         except Exception as e:
             logging.warn(f"An error occurred when trying to join the group: {group.username} {e}")
-            raise InvalidGroupException
+            raise InvalidGroupException(f"An error occurred when trying to join the group: {group.username} {e}")
 
         logging.info(f"Get messages for subscription: {group_name}")
         async for message in client.iter_messages(group, limit=10, min_id=last_processed_message):
