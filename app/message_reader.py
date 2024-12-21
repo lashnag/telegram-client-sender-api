@@ -22,7 +22,7 @@ async def fetch_messages(group_name, last_processed_message):
     try:
         try:
             group = await client.get_entity(group_name)
-        except UsernameInvalidError as no_group:
+        except (UsernameInvalidError, ValueError) as no_group:
             logging.warn(f"No group error: {no_group}, {group_name}")
             raise InvalidGroupException
 
