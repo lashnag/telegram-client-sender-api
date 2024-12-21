@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /sender_api
 
-CMD ["sh", "-c", "sleep 45; python app/main_v1.py && python app/main_v2.py"]
+CMD ["sh", "-c", "sleep 45; python app/main_v2.py & python app/main_v1.py"]
