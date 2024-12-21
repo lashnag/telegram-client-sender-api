@@ -18,8 +18,7 @@ client = TelegramClient(StringSession(session_string), api_id, api_hash)
 
 async def fetch_messages(group_name, last_processed_message):
     await client.start(phone_number)
-    messages = []
-    last_message_id = None
+    messages = {}
     try:
         try:
             group = await client.get_entity(group_name)
@@ -37,10 +36,8 @@ async def fetch_messages(group_name, last_processed_message):
         logging.info(f"Get messages for subscription: {group_name}")
         async for message in client.iter_messages(group, limit=10, min_id=last_processed_message):
             if message.text:
-                messages.append(message.text)
-                last_message_id = message.id
-
-        return messages, last_message_id
+                messages[message.id] = message.text
+        return messages
 
     except InvalidGroupException:
         raise

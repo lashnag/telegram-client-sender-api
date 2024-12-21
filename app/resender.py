@@ -76,7 +76,7 @@ async def message_sender():
         message_link = f"https://t.me/{group_name}/{message_id}"
         full_text = (
             f"{text}\n\n"
-            f"Сообщение переслано из группы: {group_name}\n"
+            f"Сообщение переслано из группы: @{group_name}\n"
             f"[Перейти к сообщению]({message_link})"
         )
         try:
