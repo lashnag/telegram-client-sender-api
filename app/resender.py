@@ -20,6 +20,7 @@ with open(session_file_path, "r", encoding="utf-8") as file:
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
 russian_stemmer = SnowballStemmer("russian")
 message_queue = asyncio.Queue()
+logger = logging.getLogger('resender')
 
 async def message_fetcher():
     await client.start(phone_number)
@@ -33,15 +34,15 @@ async def message_fetcher():
                     group = await client.get_entity(group_name)
                 except UsernameInvalidError as no_group:
                     exception_subscriptions.add(group_name)
-                    logging.warn(f"No group error: {no_group}, added to ignore list {group_name}")
+                    logger.warning(f"No group error: {no_group}, added to ignore list {group_name}")
                     continue
 
                 await join_public_group(group)
-                logging.info(f"Check messages for subscription: {group_name}")
+                logger.info(f"Check messages for subscription: {group_name}")
                 async for message in client.iter_messages(group, limit=10):
                     if message.text:
                         for subscriber, keywords in subscribers_keywords.items():
-                            logging.info(f"Check messages for subscriber: {subscriber}, keywords: {keywords}")
+                            logger.info(f"Check messages for subscriber: {subscriber}, keywords: {keywords}")
                             if is_message_processed(subscriber, group_name, message.id):
                                 continue
 
@@ -56,7 +57,7 @@ async def message_fetcher():
                                     break
 
         except Exception as error:
-            logging.error(f"Common error: {error}", exc_info=True)
+            logger.error(f"Common error: {error}", exc_info=True)
 
         await asyncio.sleep(30)
 
@@ -68,7 +69,7 @@ async def join_public_group(group):
         await client(JoinChannelRequest(group))
     except Exception as e:
         exception_subscriptions.add(group.username)
-        logging.warn(f"An error occurred when trying to join the group: {group.username} {e}, added to ignore list")
+        logger.warning(f"An error occurred when trying to join the group: {group.username} {e}, added to ignore list")
 
 async def message_sender():
     while True:
@@ -81,7 +82,7 @@ async def message_sender():
         )
         try:
             await client.send_message(subscriber, full_text, link_preview=False)
-            logging.info(f'Message sent to {subscriber}: "{text}"')
+            logger.info(f'Message sent to {subscriber}: "{text}"')
         except Exception as e:
-            logging.error(f"Failed to send message to {subscriber}: {e}")
+            logger.error(f"Failed to send message to {subscriber}: {e}")
         await asyncio.sleep(30)

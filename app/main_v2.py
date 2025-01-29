@@ -1,13 +1,9 @@
 import uvicorn
 import logging
 from controller import server
+from logger import init_logger
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S"
-)
-logging.getLogger().setLevel(logging.INFO)
-logging.info("Сервер запущен")
+init_logger()
+logging.getLogger("main_v2").info("Сервер запущен")
 
 uvicorn.run(server, host='0.0.0.0', port=4322)
