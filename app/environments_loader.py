@@ -32,3 +32,10 @@ def get_backend_path():
 
     except FileNotFoundError:
         return "http://backend:8080/api/subscriptions"
+
+def is_test_mode():
+    try:
+        open(credentials_file_path, 'r')
+        return False
+    except FileNotFoundError:
+        return True
