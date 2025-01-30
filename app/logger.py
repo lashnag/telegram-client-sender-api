@@ -5,6 +5,7 @@ from environments_loader import is_test_mode
 def init_logger():
     if is_test_mode:
         logstash_handlers = [logging.StreamHandler()]
+        logging.getLogger("logger").info("Dev логгер")
     else:
         logstash_handlers = [
             AsynchronousLogstashHandler(
@@ -13,6 +14,7 @@ def init_logger():
                 database_path=None
             )
         ]
+        logging.getLogger("logger").info("Prod логгер")
 
     logging.basicConfig(
         level=logging.INFO,
