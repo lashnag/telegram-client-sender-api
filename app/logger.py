@@ -5,7 +5,7 @@ from environments_loader import is_test_mode
 
 def init_logger():
     logging.basicConfig(
-        level=logging.DEBUG if is_test_mode else logging.INFO,
+        level=logging.DEBUG if is_test_mode() else logging.INFO,
         datefmt = "%Y-%m-%d %H:%M:%S",
         handlers = [
             logging.StreamHandler()
@@ -15,7 +15,7 @@ def init_logger():
     logger = logging.getLogger("app")
     logger.debug("foo")
     logger.info("bar")
-    logger.info(f"Test mode: {is_test_mode}")
+    logger.info(f"Test mode: {is_test_mode()}")
 
 class JsonFormatter(logging.Formatter):
     def format(self, record):
