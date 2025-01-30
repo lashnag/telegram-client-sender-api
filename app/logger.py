@@ -8,22 +8,24 @@ def init_logger():
         logging.root.removeHandler(handler)
 
     if is_test_mode:
+        handler = logging.StreamHandler()
+        handler.setLevel(logging.DEBUG)
         logging.basicConfig(
             level=logging.DEBUG,
             datefmt="%Y-%m-%d %H:%M:%S",
-            handlers=[logging.StreamHandler()]
+            handlers=[handler]
         )
     else:
+        handler = AsynchronousLogstashHandler(
+            host='logstash',
+            port=5022,
+            database_path=None
+        )
+        handler.setLevel(logging.INFO)
         logging.basicConfig(
             level=logging.INFO,
             datefmt="%Y-%m-%d %H:%M:%S",
-            handlers=[
-                AsynchronousLogstashHandler(
-                    host='logstash',
-                    port=5022,
-                    database_path=None
-                )
-            ]
+            handlers=[handler]
         )
 
     formatter = JsonFormatter()
