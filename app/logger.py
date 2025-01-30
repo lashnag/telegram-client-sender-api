@@ -17,17 +17,19 @@ def init_logger():
         )
         level = logging.INFO
 
+    handler.setLevel(level)
+    formatter = JsonFormatter()
+    handler.setFormatter(formatter)
+
     logging.basicConfig(
         level=level,
         datefmt="%Y-%m-%d %H:%M:%S",
         handlers=[handler]
     )
-
-    handler.setLevel(level)
-    formatter = JsonFormatter()
-    handler.setFormatter(formatter)
-
+    logging.root.addHandler(handler)
     logger.addHandler(handler)
+    for handler in logging.root.handlers:
+        handler.setLevel(level)
 
     logger.info(f"Test mode: {is_test_mode}")
 
