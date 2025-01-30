@@ -5,24 +5,27 @@ from environments_loader import is_test_mode
 
 def init_logger():
     if is_test_mode:
+        handler = logging.StreamHandler()
         logging.basicConfig(
             level=logging.DEBUG,
             datefmt="%Y-%m-%d %H:%M:%S",
+            handlers=[handler]
         )
+        logging.getLogger().addHandler(handler)
         for handler in logging.root.handlers:
             handler.setLevel(logging.DEBUG)
     else:
+        handler = AsynchronousLogstashHandler(
+            host='logstash',
+            port=5022,
+            database_path=None,
+        )
         logging.basicConfig(
             level=logging.INFO,
             datefmt="%Y-%m-%d %H:%M:%S",
+            handlers=[handler]
         )
-        logging.getLogger().addHandler(
-            AsynchronousLogstashHandler(
-                host='logstash',
-                port=5022,
-                database_path=None
-            )
-        )
+        logging.getLogger().addHandler(handler)
         for handler in logging.root.handlers:
             handler.setLevel(logging.INFO)
 
