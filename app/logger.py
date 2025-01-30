@@ -6,26 +6,25 @@ from environments_loader import is_test_mode
 def init_logger():
     if is_test_mode:
         logging.basicConfig(
-            level=logging.INFO,
+            level=logging.DEBUG,
             datefmt="%Y-%m-%d %H:%M:%S",
-            handlers=[logging.StreamHandler()]
         )
         for handler in logging.root.handlers:
             handler.setLevel(logging.DEBUG)
     else:
         logging.basicConfig(
-            level=logging.DEBUG,
+            level=logging.INFO,
             datefmt="%Y-%m-%d %H:%M:%S",
-            handlers=[
-                AsynchronousLogstashHandler(
-                    host='logstash',
-                    port=5022,
-                    database_path=None
-                )
-            ]
+        )
+        logging.getLogger().addHandler(
+            AsynchronousLogstashHandler(
+                host='logstash',
+                port=5022,
+                database_path=None
+            )
         )
         for handler in logging.root.handlers:
-            handler.setLevel(logging.DEBUG)
+            handler.setLevel(logging.INFO)
 
     formatter = JsonFormatter()
     for handler in logging.root.handlers:
