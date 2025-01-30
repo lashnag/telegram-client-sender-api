@@ -9,6 +9,7 @@ async def synch_subscribers():
     url = get_backend_path()
 
     while True:
+        logging.getLogger().info(f"Log synch message")
         try:
             response = requests.get(url)
             response.raise_for_status()
