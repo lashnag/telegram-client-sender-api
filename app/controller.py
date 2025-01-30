@@ -1,3 +1,4 @@
+import logging
 from message_reader import fetch_messages
 from exceptions import InvalidGroupException
 from fastapi import FastAPI
@@ -8,6 +9,7 @@ server = FastAPI()
 @server.get('/get-subscription-messages')
 async def process_data(subscription: str, last_message_id: int):
     try:
+        logging.debug("Got request: " + subscription + " last message id: " + str(last_message_id))
         messages = await fetch_messages(subscription, last_message_id)
     except InvalidGroupException:
         return JSONResponse(content={'error': "Invalid group"}, status_code=403)
