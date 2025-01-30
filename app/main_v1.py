@@ -5,7 +5,7 @@ from synch_subscribers import synch_subscribers
 from logger import init_logger
 
 init_logger()
-logging.getLogger("main_v1").info("Pull приложение запущено")
+logging.getLogger().info("Pull приложение запущено")
 
 async def main():
     await asyncio.gather(message_fetcher(), synch_subscribers(), message_sender())

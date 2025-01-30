@@ -4,14 +4,13 @@ import logging
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 credentials_file_path = os.path.join(current_dir, 'credentials.json')
-logger = logging.getLogger('environment_loader')
 
 def load_credentials():
     try:
         with open(credentials_file_path, 'r') as file:
             data = json.load(file)
 
-        logger.debug(f"Developer mode")
+        logging.getLogger().debug(f"Developer mode")
         return data['api_id'], data['api_hash'], data['phone_number']
 
     except FileNotFoundError:
@@ -27,7 +26,7 @@ def load_credentials():
 def get_backend_path():
     try:
         open(credentials_file_path, 'r')
-        logger.debug(f"Developer mode. Start backend on localhost:8080")
+        logging.getLogger().debug(f"Developer mode. Start backend on localhost:8080")
         return "http://127.0.0.1:8080/api/subscriptions"
 
     except FileNotFoundError:

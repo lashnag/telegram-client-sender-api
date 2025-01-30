@@ -11,7 +11,6 @@ api_id, api_hash, phone_number = load_credentials()
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 session_file_path = os.path.join(current_dir, '../mounted/session.txt')
-logger = logging.getLogger('message_reader')
 
 with open(session_file_path, "r", encoding="utf-8") as file:
     session_string = file.read()
@@ -25,17 +24,17 @@ async def fetch_messages(group_name, last_processed_message):
         try:
             group = await client.get_entity(group_name)
         except (UsernameInvalidError, ValueError) as no_group:
-            logger.warning(f"No group error: {no_group}, {group_name}")
+            logging.getLogger().warning(f"No group error: {no_group}, {group_name}")
             raise InvalidGroupException(f"No group error: {no_group}, {group_name}")
 
         try:
             await client.start(phone_number)
             await client(JoinChannelRequest(group))
         except Exception as e:
-            logger.warning(f"An error occurred when trying to join the group: {group.username} {e}")
+            logging.getLogger().warning(f"An error occurred when trying to join the group: {group.username} {e}")
             raise InvalidGroupException(f"An error occurred when trying to join the group: {group.username} {e}")
 
-        logger.info(f"Get messages for subscription: {group_name}")
+        logging.getLogger().info(f"Get messages for subscription: {group_name}")
         async for message in client.iter_messages(group, limit=10, min_id=last_processed_message):
             if message.text:
                 messages[message.id] = message.text
@@ -44,5 +43,5 @@ async def fetch_messages(group_name, last_processed_message):
     except InvalidGroupException:
         raise
     except Exception as error:
-        logger.error(f"Common error: {error}", exc_info=True)
+        logging.getLogger().error(f"Common error: {error}", exc_info=True)
         raise

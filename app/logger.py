@@ -32,7 +32,7 @@ def init_logger():
     for handler in logging.root.handlers:
         handler.setFormatter(formatter)
 
-    logging.getLogger("logger").info(f"Тестовый режим логгера " + str(is_test_mode()))
+    logging.getLogger().info(f"Тестовый режим логгера " + str(is_test_mode()))
 
 class JsonFormatter(logging.Formatter):
     def format(self, record):
@@ -40,5 +40,6 @@ class JsonFormatter(logging.Formatter):
             'asctime': self.formatTime(record),
             'levelname': record.levelname,
             'message': record.getMessage(),
+            'filename': record.filename,
         }
         return json.dumps(log_obj, ensure_ascii=False)
