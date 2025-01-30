@@ -1,5 +1,6 @@
 import logging
 import json
+import traceback
 from logstash_async.handler import AsynchronousLogstashHandler
 from environments_loader import is_test_mode
 
@@ -21,9 +22,9 @@ def init_logger():
 class JsonFormatter(logging.Formatter):
     def format(self, record):
         log_obj = {
-            'asctime': self.formatTime(record),
-            'levelname': record.levelname,
+            'level': record.levelname,
             'message': record.getMessage(),
-            'filename': record.filename,
+            'logger_name': record.filename,
+            'exception': ''.join(traceback.format_exception(record.exc_info)),
         }
         return json.dumps(log_obj)
