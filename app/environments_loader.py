@@ -19,7 +19,7 @@ def load_credentials():
         phone_number = os.getenv('PHONE_NUMBER')
 
         if not api_id or not api_hash or not phone_number:
-            raise ValueError("Не удалось найти необходимые данные ни в файле, ни в переменных окружения")
+            raise ValueError("Cant find value in file or in env")
 
         return api_id, api_hash, phone_number
 
