@@ -28,4 +28,4 @@ async def synch_subscribers():
         except ValueError as json_err:
             logging.getLogger().error(f"JSON decode error: {json_err}", exc_info=True)
 
-        await asyncio.sleep(100)
+        await asyncio.sleep(1)
