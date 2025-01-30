@@ -9,7 +9,6 @@ async def synch_subscribers():
     url = get_backend_path()
 
     while True:
-        logging.getLogger().info(f"Log synch message")
         try:
             response = requests.get(url)
             response.raise_for_status()
@@ -28,4 +27,4 @@ async def synch_subscribers():
         except ValueError as json_err:
             logging.getLogger().error(f"JSON decode error: {json_err}", exc_info=True)
 
-        await asyncio.sleep(1)
+        await asyncio.sleep(100)

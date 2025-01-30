@@ -14,7 +14,7 @@ def init_logger():
             handler.setLevel(logging.DEBUG)
     else:
         logging.basicConfig(
-            level=logging.INFO,
+            level=logging.DEBUG,
             datefmt="%Y-%m-%d %H:%M:%S",
             handlers=[
                 AsynchronousLogstashHandler(
@@ -25,7 +25,7 @@ def init_logger():
             ]
         )
         for handler in logging.root.handlers:
-            handler.setLevel(logging.INFO)
+            handler.setLevel(logging.DEBUG)
 
     formatter = JsonFormatter()
     for handler in logging.root.handlers:
