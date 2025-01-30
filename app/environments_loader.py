@@ -36,6 +36,6 @@ def get_backend_path():
 def is_test_mode():
     try:
         open(credentials_file_path, 'r')
-        return False
-    except FileNotFoundError:
         return True
+    except FileNotFoundError:
+        return False
