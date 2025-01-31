@@ -1,10 +1,8 @@
 import logging
 from message_reader import fetch_messages
 from exceptions import InvalidGroupException
-from fastapi import FastAPI
+from main_v2 import server
 from fastapi.responses import JSONResponse
-
-server = FastAPI()
 
 @server.get('/get-subscription-messages')
 async def process_data(subscription: str, last_message_id: int):
