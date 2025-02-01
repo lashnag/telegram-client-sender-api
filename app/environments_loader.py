@@ -5,7 +5,7 @@ import logging
 current_dir = os.path.dirname(os.path.abspath(__file__))
 credentials_file_path = os.path.join(current_dir, 'credentials.json')
 
-def load_credentials():
+def get_credentials():
     try:
         with open(credentials_file_path, 'r') as file:
             data = json.load(file)
@@ -22,6 +22,23 @@ def load_credentials():
             raise ValueError("Cant find value in file or in env")
 
         return api_id, api_hash, phone_number
+
+def get_backend_credentials():
+    try:
+        with open(credentials_file_path, 'r') as file:
+            data = json.load(file)
+
+        logging.getLogger().debug(f"Developer mode")
+        return data['backend_basic_auth_user'], data['backend_basic_auth_password']
+
+    except FileNotFoundError:
+        basic_auth_user = os.getenv('BACKEND_BASIC_AUTH_USER')
+        basic_auth_password = os.getenv('BACKEND_BASIC_AUTH_PASSWORD')
+
+        if not basic_auth_user or not basic_auth_password:
+            raise ValueError("Cant find value in file or in env")
+
+        return basic_auth_user, basic_auth_password
 
 def get_backend_path():
     try:

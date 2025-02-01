@@ -7,10 +7,10 @@ from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
 from subscription_utils import subscriptions, exception_subscriptions, add_processed_message, is_message_processed
-from environments_loader import load_credentials
+from environments_loader import get_credentials
 from telethon.sessions import StringSession
 
-api_id, api_hash, phone_number = load_credentials()
+api_id, api_hash, phone_number = get_credentials()
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 session_file_path = os.path.join(current_dir, '../mounted/session.txt')

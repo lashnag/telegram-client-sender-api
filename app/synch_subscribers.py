@@ -1,16 +1,18 @@
 import requests
 import asyncio
 import logging
+from requests.auth import HTTPBasicAuth
 from datetime import datetime
 from subscription_utils import add_subscription, clear_subscriptions
-from environments_loader import get_backend_path
+from environments_loader import get_backend_path, get_backend_credentials
 
 async def synch_subscribers():
     url = get_backend_path()
+    backend_basic_auth_user, backend_basic_auth_password = get_backend_credentials()
 
     while True:
         try:
-            response = requests.get(url)
+            response = requests.get(url, auth=HTTPBasicAuth(backend_basic_auth_user, backend_basic_auth_password))
             response.raise_for_status()
             data = response.json()
 
