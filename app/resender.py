@@ -2,6 +2,8 @@ import os
 import asyncio
 import re
 import logging
+import markdown
+from bs4 import BeautifulSoup
 from nltk.stem.snowball import SnowballStemmer
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
@@ -47,7 +49,7 @@ async def message_fetcher():
 
                             add_processed_message(subscriber, group_name, message.id)
                             for keyword in keywords:
-                                words_in_message = re.findall(r'\b\w+\b', message.text.lower())
+                                words_in_message = re.findall(r'\b\w+\b', md_to_text(message.text.lower()))
                                 words_in_keyword = re.findall(r'\b\w+\b', keyword.lower())
                                 stems_in_message = [russian_stemmer.stem(token) for token in words_in_message if token.isalpha()]
                                 stems_in_keyword = [russian_stemmer.stem(token) for token in words_in_keyword if token.isalpha()]
@@ -85,3 +87,8 @@ async def message_sender():
         except Exception as e:
             logging.getLogger().error(f"Failed to send message to {subscriber}: {e}")
         await asyncio.sleep(30)
+
+def md_to_text(md):
+    html = markdown.markdown(md)
+    soup = BeautifulSoup(html, features='html.parser')
+    return soup.get_text()
