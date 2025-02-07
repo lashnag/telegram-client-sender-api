@@ -4,13 +4,13 @@ import re
 import logging
 import markdown
 from bs4 import BeautifulSoup
-from nltk.stem.snowball import SnowballStemmer
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
 from subscription_utils import subscriptions, exception_subscriptions, add_processed_message, is_message_processed
 from environments_loader import get_credentials
 from telethon.sessions import StringSession
+from pymystem3 import Mystem
 
 api_id, api_hash, phone_number = get_credentials()
 
@@ -20,8 +20,8 @@ with open(session_file_path, "r", encoding="utf-8") as file:
     session_string = file.read()
 
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
-russian_stemmer = SnowballStemmer("russian")
 message_queue = asyncio.Queue()
+mystem = Mystem()
 
 async def message_fetcher():
     await client.start(phone_number)
@@ -51,9 +51,9 @@ async def message_fetcher():
                             for keyword in keywords:
                                 words_in_message = re.findall(r'\b\w+\b', md_to_text(message.text.lower()))
                                 words_in_keyword = re.findall(r'\b\w+\b', keyword.lower())
-                                stems_in_message = [russian_stemmer.stem(token) for token in words_in_message if token.isalpha()]
-                                stems_in_keyword = [russian_stemmer.stem(token) for token in words_in_keyword if token.isalpha()]
-                                if all(stem in stems_in_message for stem in stems_in_keyword):
+                                lemmas_in_message = [mystem.lemmatize(token)[0] for token in words_in_message if token.isalpha()]
+                                lemmas_in_keyword = [mystem.lemmatize(token)[0] for token in words_in_keyword if token.isalpha()]
+                                if all(stem in lemmas_in_message for stem in lemmas_in_keyword):
                                     await message_queue.put((subscriber, message.text, message.id, group_name))
                                     break
 
