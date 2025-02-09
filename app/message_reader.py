@@ -1,6 +1,5 @@
 import os
 import logging
-import base64
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
@@ -39,15 +38,6 @@ async def fetch_messages(group_name, last_processed_message):
         async for message in client.iter_messages(group, limit=10, min_id=last_processed_message):
             if message.text:
                 messages[message.id] = {"text": message.text}
-            if message.media:
-                if hasattr(message.media, 'photo'):
-                    try:
-                        file = await message.download()
-                        with open(file, "rb") as image_file:
-                            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-                            messages[message.id]["image"] = encoded_string
-                    except Exception as e:
-                        logging.getLogger().error(f"Error downloading message ID {message.id}: {e}")
 
         return messages
 
