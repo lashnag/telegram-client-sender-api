@@ -1,3 +1,4 @@
+import base64
 import os
 import logging
 from telethon.errors.rpcerrorlist import UsernameInvalidError
@@ -37,7 +38,15 @@ async def fetch_messages(group_name, last_processed_message):
         logging.getLogger().info(f"Get messages for subscription: {group_name}")
         async for message in client.iter_messages(group, limit=10, min_id=last_processed_message):
             if message.text:
-                messages[message.id] = message.text
+                messages[message.id] = {"text": message.text}
+            if message.media:
+                if hasattr(message.media, 'photo'):
+                    try:
+                        with open(await message.download(), "rb") as image_file:
+                            encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                            messages[message.id]["image"] = encoded_string
+                    except Exception as e:
+                        logging.getLogger().error(f"Error downloading message ID {message.id}: {e}")
 
         return messages
 
