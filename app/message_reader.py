@@ -37,7 +37,7 @@ async def fetch_messages(group_name, last_processed_message):
         logging.getLogger().info(f"Get messages for subscription: {group_name}")
         async for message in client.iter_messages(group, limit=10, min_id=last_processed_message):
             if message.text:
-                messages[message.id] = {"text": message.text}
+                messages[message.id] = message.text
 
         return messages
 
