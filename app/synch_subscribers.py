@@ -15,12 +15,12 @@ async def synch_subscribers():
             response = requests.get(url, auth=HTTPBasicAuth(backend_basic_auth_user, backend_basic_auth_password))
             response.raise_for_status()
             data = response.json()
+            logging.getLogger().info(f"Sync get | Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
             clear_subscriptions()
             for item in data:
                 add_subscription(item['subscriber'], item['subscription'], item['keyword'])
-                logging.getLogger().info(f"Sync get | Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                logging.getLogger().info(f"Subscriber: {item['subscriber']}, Subscription: {item['subscription']}, Keyword: {item['keyword']}")
+                logging.getLogger().debug(f"Subscriber: {item['subscriber']}, Subscription: {item['subscription']}, Keyword: {item['keyword']}")
 
         except requests.exceptions.HTTPError as http_err:
             logging.getLogger().error(f"HTTP error occurred: {http_err}", exc_info=True)
