@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /sender_api
 
-CMD ["sh", "-c", "sleep 60; cd app; uvicorn main_v2:server --host 0.0.0.0 --port 4322 --workers 4 & python main_v1.py"]
+CMD ["sh", "-c", "cd app; uvicorn main_v2:server --host 0.0.0.0 --port 4322 --workers 4 & python main_v1.py"]

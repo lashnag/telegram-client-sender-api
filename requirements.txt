@@ -9,3 +9,5 @@ python-logstash-async~=3.0.0
 Markdown~=3.7
 beautifulsoup4~=4.13.0
 pymystem3~=0.2.0
+natasha~=1.6.0
+pydantic~=2.10.3

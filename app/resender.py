@@ -25,6 +25,7 @@ mystem = Mystem()
 
 async def message_fetcher():
     await client.start(phone_number)
+    await asyncio.sleep(100) # Задержка на время пока не запустилось Java приложение
     while True:
         try:
             for group_name, subscribers_keywords in subscriptions.items():
@@ -39,11 +40,11 @@ async def message_fetcher():
                     continue
 
                 await join_public_group(group, group_name)
-                logging.getLogger().info(f"Check messages for subscription: {group_name}")
+                logging.getLogger().info(f"Check messages for group_name: {group_name}")
                 async for message in client.iter_messages(group, limit=10):
                     if message.text:
                         for subscriber, keywords in subscribers_keywords.items():
-                            logging.getLogger().info(f"Check messages for subscriber: {subscriber}, keywords: {keywords}")
+                            logging.getLogger().debug(f"Check messages for subscriber: {subscriber}, keywords: {keywords}, group name: {group_name}")
                             if is_message_processed(subscriber, group_name, message.id):
                                 continue
 
