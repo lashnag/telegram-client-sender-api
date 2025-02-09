@@ -11,3 +11,5 @@ beautifulsoup4~=4.13.0
 pymystem3~=0.2.0
 natasha~=1.6.0
 pydantic~=2.10.3
+pytesseract~=0.3.13
+pillow~=11.1.0

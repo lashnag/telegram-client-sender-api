@@ -1,8 +1,8 @@
-import base64
 import os
 import logging
+import pytesseract
+from PIL import Image
 from io import BytesIO
-
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
@@ -39,16 +39,20 @@ async def fetch_messages(group_name, last_processed_message):
 
         logging.getLogger().info(f"Get messages for subscription: {group_name}")
         async for message in client.iter_messages(group, limit=10, min_id=last_processed_message):
+            messages[message.id] = {}
             if message.text:
-                messages[message.id] = {"text": message.text}
+                messages[message.id]["text"] = message.text
             if message.media:
                 if hasattr(message.media, 'photo'):
                     try:
                         file_buffer = BytesIO()
                         await message.client.download_media(message, file=file_buffer)
                         file_buffer.seek(0)
-                        encoded_string = base64.b64encode(file_buffer.read()).decode('utf-8')
-                        messages[message.id] = {"image": encoded_string}
+                        image = Image.open(file_buffer)
+                        extracted_text_en = pytesseract.image_to_string(image, lang='eng')
+                        extracted_text_ru = pytesseract.image_to_string(image, lang='rus')
+                        messages[message.id]["image_text_ru"] = extracted_text_ru
+                        messages[message.id]["image_text_en"] = extracted_text_en
                     except Exception as e:
                         logging.getLogger().error(f"Error downloading message ID {message.id}: {e}")
 
