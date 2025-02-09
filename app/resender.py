@@ -25,6 +25,7 @@ mystem = Mystem()
 
 async def message_fetcher():
     await client.start(phone_number)
+    await asyncio.sleep(100)  # Задержка на время пока не запустилось Java приложение
     while True:
         try:
             for group_name, subscribers_keywords in subscriptions.items():
