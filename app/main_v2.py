@@ -1,6 +1,5 @@
 from logger import init_logger
 from fastapi import FastAPI
-from pydantic import BaseModel
 import logging
 from message_reader import fetch_messages
 from exceptions import InvalidGroupException
@@ -26,11 +25,3 @@ async def process_data(subscription: str, last_message_id: int):
         content={"messages": messages},
         status_code=200
     )
-
-class SentenceRequest(BaseModel):
-    word: str
-
-@server.post("/lemmatize")
-def lemmatize(request: SentenceRequest):
-    lemmas = mystem.lemmatize(request.word)
-    return JSONResponse(content={'lemmatized': lemmas[0]})

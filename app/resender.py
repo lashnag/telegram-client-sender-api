@@ -3,12 +3,14 @@ import asyncio
 import re
 import logging
 import markdown
+import requests
 from bs4 import BeautifulSoup
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
+from app.exceptions import LemmatizationError
 from subscription_utils import subscriptions, exception_subscriptions, add_processed_message, is_message_processed
-from environments_loader import get_credentials
+from environments_loader import get_credentials, get_lemmatizer_path
 from telethon.sessions import StringSession
 from pymystem3 import Mystem
 
@@ -22,6 +24,7 @@ with open(session_file_path, "r", encoding="utf-8") as file:
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
 message_queue = asyncio.Queue()
 mystem = Mystem()
+lemmatizer = get_lemmatizer_path()
 
 async def message_fetcher():
     await client.start(phone_number)
@@ -52,8 +55,8 @@ async def message_fetcher():
                             for keyword in keywords:
                                 words_in_message = re.findall(r'\b\w+\b', md_to_text(message.text.lower()))
                                 words_in_keyword = re.findall(r'\b\w+\b', keyword.lower())
-                                lemmas_in_message = [mystem.lemmatize(token)[0] for token in words_in_message if token.isalpha()]
-                                lemmas_in_keyword = [mystem.lemmatize(token)[0] for token in words_in_keyword if token.isalpha()]
+                                lemmas_in_message = [lemmatize(token) for token in words_in_message if token.isalpha()]
+                                lemmas_in_keyword = [lemmatize(token) for token in words_in_keyword if token.isalpha()]
                                 if all(stem in lemmas_in_message for stem in lemmas_in_keyword):
                                     await message_queue.put((subscriber, message.text, message.id, group_name))
                                     break
@@ -93,3 +96,16 @@ def md_to_text(md):
     html = markdown.markdown(md)
     soup = BeautifulSoup(html, features='html.parser')
     return soup.get_text()
+
+
+def lemmatize(token):
+    payload = {"word": token}
+    response = requests.post(lemmatizer, json=payload)
+
+    if response.status_code != 200:
+        raise LemmatizationError(f"Error: {response.status_code}")
+    json_response = response.json()
+    if "lemmatized" not in json_response:
+        raise LemmatizationError("Key 'lemmatized' not found in response.")
+
+    return response.json().get("lemmatized")
