@@ -2,22 +2,22 @@ import logging
 import json
 import traceback
 from logstash_async.handler import AsynchronousLogstashHandler
-from environments_loader import is_test_mode
+from environments_loader import is_prod_mode
 
 def init_logger():
-    handler = logging.StreamHandler() if is_test_mode() else AsynchronousLogstashHandler(
+    handler = AsynchronousLogstashHandler(
         host='logstash',
         port=5022,
         database_path=None,
-    )
+    ) if is_prod_mode() else logging.StreamHandler()
     handler.setFormatter(JsonFormatter())
     logging.basicConfig(
-        level=logging.DEBUG if is_test_mode() else logging.INFO,
+        level=logging.INFO if is_prod_mode() else logging.DEBUG,
         datefmt = "%Y-%m-%d %H:%M:%S",
         handlers = [handler]
     )
 
-    logging.getLogger().info(f"Test mode: {is_test_mode()}")
+    logging.getLogger().info(f"Prod mode: {is_prod_mode()}")
 
 class JsonFormatter(logging.Formatter):
     def format(self, record):

@@ -6,7 +6,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 credentials_file_path = os.path.join(current_dir, 'credentials.json')
 
 def get_credentials():
-    if is_test_mode():
+    if is_prod_mode():
         api_id = os.getenv('API_ID')
         api_hash = os.getenv('API_HASH')
         phone_number = os.getenv('PHONE_NUMBER')
@@ -21,7 +21,7 @@ def get_credentials():
         return data['api_id'], data['api_hash'], data['phone_number']
 
 def get_backend_credentials():
-    if is_test_mode():
+    if is_prod_mode():
         basic_auth_user = os.getenv('BACKEND_BASIC_AUTH_USER')
         basic_auth_password = os.getenv('BACKEND_BASIC_AUTH_PASSWORD')
 
@@ -36,21 +36,21 @@ def get_backend_credentials():
         return data['backend_basic_auth_user'], data['backend_basic_auth_password']
 
 def get_backend_path():
-    if is_test_mode():
-        return "http://127.0.0.1:8080/api/subscriptions"
-    else:
+    if is_prod_mode():
         return "http://backend:8080/api/subscriptions"
+    else:
+        return "http://127.0.0.1:8080/api/subscriptions"
 
 def get_lemmatizer_path():
-    if is_test_mode():
-        return "http://127.0.0.1:4355/lemmatize"
-    else:
+    if is_prod_mode():
         return "http://lemmatizer:4355/lemmatize"
+    else:
+        return "http://127.0.0.1:4355/lemmatize"
 
-def is_test_mode():
+def is_prod_mode():
     try:
         open(credentials_file_path, 'r')
         logging.getLogger().debug(f"Developer mode")
-        return True
-    except FileNotFoundError:
         return False
+    except FileNotFoundError:
+        return True
