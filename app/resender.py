@@ -8,11 +8,10 @@ from bs4 import BeautifulSoup
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
 from telethon import TelegramClient
-from app.exceptions import LemmatizationError
+from exceptions import LemmatizationError
 from subscription_utils import subscriptions, exception_subscriptions, add_processed_message, is_message_processed
 from environments_loader import get_credentials, get_lemmatizer_path
 from telethon.sessions import StringSession
-from pymystem3 import Mystem
 
 api_id, api_hash, phone_number = get_credentials()
 
@@ -23,7 +22,6 @@ with open(session_file_path, "r", encoding="utf-8") as file:
 
 client = TelegramClient(StringSession(session_string), api_id, api_hash)
 message_queue = asyncio.Queue()
-mystem = Mystem()
 lemmatizer = get_lemmatizer_path()
 
 async def message_fetcher():

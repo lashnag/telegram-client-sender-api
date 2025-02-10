@@ -4,12 +4,10 @@ import logging
 from message_reader import fetch_messages
 from exceptions import InvalidGroupException
 from fastapi.responses import JSONResponse
-from pymystem3 import Mystem
 
 init_logger()
 logging.getLogger().info("Main v2 run")
 server = FastAPI()
-mystem = Mystem()
 
 @server.get('/get-subscription-messages')
 async def process_data(subscription: str, last_message_id: int):

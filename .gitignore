@@ -1,7 +1,4 @@
 .idea
 .venv
 /mounted
-credentials.json
 app/credentials.json
-test*
-app/test*

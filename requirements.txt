@@ -1,15 +1,8 @@
 telethon~=1.38.1
 requests~=2.32.3
-nltk~=3.9.1
-langdetect~=1.0.9
 uvicorn~=0.32.1
 gunicorn~=23.0.0
 fastapi~=0.115.6
 python-logstash-async~=3.0.0
 Markdown~=3.7
 beautifulsoup4~=4.13.0
-pymystem3~=0.2.0
-natasha~=1.6.0
-pydantic~=2.10.3
-pytesseract~=0.3.13
-pillow~=11.1.0
