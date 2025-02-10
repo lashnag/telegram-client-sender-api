@@ -1,7 +1,6 @@
+import base64
 import os
 import logging
-import pytesseract
-from PIL import Image
 from io import BytesIO
 from telethon.errors.rpcerrorlist import UsernameInvalidError
 from telethon.tl.functions.channels import JoinChannelRequest
@@ -48,11 +47,8 @@ async def fetch_messages(group_name, last_processed_message):
                         file_buffer = BytesIO()
                         await message.client.download_media(message, file=file_buffer)
                         file_buffer.seek(0)
-                        image = Image.open(file_buffer)
-                        extracted_text_en = pytesseract.image_to_string(image, lang='eng')
-                        extracted_text_ru = pytesseract.image_to_string(image, lang='rus')
-                        messages[message.id]["image_text_ru"] = extracted_text_ru
-                        messages[message.id]["image_text_en"] = extracted_text_en
+                        encoded_string = base64.b64encode(file_buffer.read()).decode('utf-8')
+                        messages[message.id]["image"] = encoded_string
                     except Exception as e:
                         logging.getLogger().error(f"Error downloading message ID {message.id}: {e}")
 
