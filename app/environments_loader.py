@@ -48,9 +48,9 @@ def get_lemmatizer_path():
         return "http://127.0.0.1:4355/lemmatize"
 
 def is_prod_mode():
-    try:
-        open(credentials_file_path, 'r')
-        logging.getLogger().debug(f"Developer mode")
-        return False
-    except FileNotFoundError:
+    if os.getenv('PROD_MODE') is not None:
+        logging.getLogger().info("Production mode")
         return True
+    else:
+        logging.getLogger().info("Developer mode")
+        return False
