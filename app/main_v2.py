@@ -1,6 +1,6 @@
 from join_group import join_group
-from logger import init_logger
-from fastapi import FastAPI
+from logger import init_logger, request_headers
+from fastapi import FastAPI, Path, Request
 import logging
 from message_reader import fetch_messages
 from exceptions import InvalidGroupException
@@ -10,8 +10,9 @@ init_logger()
 logging.getLogger().info("Main v2 run")
 server = FastAPI()
 
-@server.get('/get-subscription-messages')
-async def process_data(subscription: str, last_message_id: int):
+@server.get('/group/{subscription}/messages')
+async def process_data(request: Request, subscription: str = Path(...), last_message_id: int = 0):
+    request_headers.set(dict(request.headers))
     try:
         logging.debug("Got get messages request: " + subscription + " last message id: " + str(last_message_id))
         messages = await fetch_messages(subscription, last_message_id)
@@ -23,8 +24,9 @@ async def process_data(subscription: str, last_message_id: int):
         status_code=200
     )
 
-@server.get('/join-group')
-async def process_data(subscription: str):
+@server.post('/group/{subscription}/join')
+async def process_data(request: Request, subscription: str = Path(...)):
+    request_headers.set(dict(request.headers))
     try:
         logging.debug("Got join request: " + subscription)
         await join_group(subscription)
