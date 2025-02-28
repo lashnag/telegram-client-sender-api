@@ -25,6 +25,13 @@ async def fetch_messages(group_name, last_processed_message):
         async for message in client.iter_messages(group, limit=10, min_id=last_processed_message):
             messages[message.id] = {}
             if message.text:
+                logging.getLogger("telegram_messages_logger").info(message.text, extra={
+                    'extra_fields': {
+                        'group_name': group_name,
+                        'message_id': message.id,
+                        'user': getattr(message.sender, 'username', None)
+                    }
+                })
                 messages[message.id]["text"] = message.text
             if message.media:
                 if hasattr(message.media, 'photo'):
