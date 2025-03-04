@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v*'  # Реагировать на теги, начинающиеся с 'v' (например, v1.0.0)
+      - '*'
 
 jobs:
   build-and-push:
