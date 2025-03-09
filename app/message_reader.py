@@ -40,7 +40,7 @@ async def fetch_messages(group_name, last_processed_message):
                         await message.client.download_media(message, file=file_buffer)
                         file_buffer.seek(0)
                         encoded_string = base64.b64encode(file_buffer.read()).decode('utf-8')
-                        messages[message.id]["image"] = encoded_string
+                        messages[message.id]["imageBase64"] = encoded_string
                     except Exception as e:
                         logging.getLogger().error(f"Error downloading message ID {message.id}: {e}")
 
