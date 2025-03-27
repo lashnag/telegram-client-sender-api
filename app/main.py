@@ -7,7 +7,7 @@ from exceptions import InvalidGroupException
 from fastapi.responses import JSONResponse
 
 init_logger()
-logging.getLogger().info("Main v2 run")
+logging.getLogger().info("Main run")
 server = FastAPI()
 
 @server.get('/group/{subscription}/messages')
