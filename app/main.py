@@ -16,6 +16,8 @@ async def process_data(request: Request, subscription: str = Path(...), last_mes
     try:
         logging.debug("Got get messages request: " + subscription + " last message id: " + str(last_message_id))
         messages = await fetch_messages(subscription, last_message_id)
+    except InvalidGroupException:
+        return JSONResponse(content={'error': "Invalid group"}, status_code=403)
     except Exception as e:
         return JSONResponse(content={'error': f'Internal server error: {str(e)}'}, status_code=500)
 

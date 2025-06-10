@@ -3,7 +3,9 @@ import os
 import logging
 from io import BytesIO
 from telethon import TelegramClient
+from telethon.errors import UsernameNotOccupiedError, UsernameInvalidError
 from environments_loader import get_credentials
+from exceptions import InvalidGroupException
 from telethon.sessions import StringSession
 
 api_id, api_hash, phone_number = get_credentials()
@@ -46,6 +48,10 @@ async def fetch_messages(group_name, last_processed_message):
 
         return messages
 
+    except (UsernameNotOccupiedError, UsernameInvalidError) as invalid_group:
+        error_message = f"Bag group name '{group_name}' when get messages: {str(invalid_group)}"
+        logging.getLogger().error(error_message)
+        raise InvalidGroupException(error_message)
     except Exception as error:
         logging.getLogger().error(f"Common error: {error}", exc_info=True)
         raise
