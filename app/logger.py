@@ -1,37 +1,43 @@
 import contextvars
 import logging
 import json
+import os
 import traceback
 from logstash_async.handler import AsynchronousLogstashHandler
-from environments_loader import is_prod_mode
 
 request_headers = contextvars.ContextVar('request_headers')
+
+def is_remote_log():
+    if os.getenv('REMOTE_LOGGER') is not None:
+        logging.getLogger().info("Remote logger")
+        return True
+    else:
+        logging.getLogger().info("Local logger")
+        return False
 
 def init_logger():
     main_handler = AsynchronousLogstashHandler(
         host='logstash',
         port=5022,
         database_path=None,
-    ) if is_prod_mode() else logging.StreamHandler()
+    ) if is_remote_log() else logging.StreamHandler()
     main_handler.setFormatter(JsonFormatter())
     logging.basicConfig(
-        level=logging.INFO if is_prod_mode() else logging.DEBUG,
+        level=logging.INFO,
         datefmt = "%Y-%m-%d %H:%M:%S",
         handlers = [main_handler]
     )
 
     telegram_messages_logger = logging.getLogger("telegram_messages_logger")
-    telegram_messages_logger.setLevel(logging.INFO if is_prod_mode() else logging.DEBUG)
+    telegram_messages_logger.setLevel(logging.INFO)
     telegram_messages_handler = AsynchronousLogstashHandler(
         host='logstash',
         port=5022,
         database_path=None,
-    ) if is_prod_mode() else logging.StreamHandler()
+    ) if is_remote_log() else logging.StreamHandler()
     telegram_messages_handler.setFormatter(TelegramMessagesJsonFormatter())
     telegram_messages_logger.addHandler(telegram_messages_handler)
     telegram_messages_logger.propagate = False
-
-    logging.getLogger().info(f"Prod mode: {is_prod_mode()}")
 
 class JsonFormatter(logging.Formatter):
     def format(self, record):
