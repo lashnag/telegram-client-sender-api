@@ -48,7 +48,7 @@ async def fetch_messages(group_name, last_processed_message):
 
         return messages
 
-    except (UsernameNotOccupiedError, UsernameInvalidError) as invalid_group:
+    except (UsernameNotOccupiedError, UsernameInvalidError, ValueError) as invalid_group:
         error_message = f"Bag group name '{group_name}' when get messages: {str(invalid_group)}"
         logging.getLogger().error(error_message)
         raise InvalidGroupException(error_message)
