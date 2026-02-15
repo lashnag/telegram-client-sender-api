@@ -4,6 +4,8 @@ import json
 import os
 import sys
 import traceback
+from datetime import datetime
+
 from logstash_async.handler import AsynchronousLogstashHandler
 
 request_headers = contextvars.ContextVar('request_headers')
