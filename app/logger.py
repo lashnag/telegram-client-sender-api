@@ -48,6 +48,7 @@ class JsonFormatter(logging.Formatter):
             'level': record.levelname,
             'message': record.getMessage(),
             'logger_name': record.filename,
+            'timestamp': datetime.fromtimestamp(record.created).strftime('%Y-%m-%d %H:%M:%S'),
         }
         if record.exc_info:
             log_obj['exception'] = ''.join(traceback.format_exception(*record.exc_info))
