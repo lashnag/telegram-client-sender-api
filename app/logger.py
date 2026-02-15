@@ -22,7 +22,7 @@ def init_logger():
         host='logstash',
         port=5022,
         database_path=None,
-    ) if is_remote_log() else logging.StreamHandler(sys.stdout)
+    ) if is_remote_logger() else logging.StreamHandler(sys.stdout)
     main_handler.setFormatter(JsonFormatter())
     logging.basicConfig(
         level=logging.INFO,
@@ -36,7 +36,7 @@ def init_logger():
         host='logstash',
         port=5022,
         database_path=None,
-    ) if is_remote_log() else logging.StreamHandler()
+    ) if is_remote_logger() else logging.StreamHandler()
     telegram_messages_handler.setFormatter(TelegramMessagesJsonFormatter())
     telegram_messages_logger.addHandler(telegram_messages_handler)
     telegram_messages_logger.propagate = False
