@@ -8,8 +8,9 @@ from logstash_async.handler import AsynchronousLogstashHandler
 
 request_headers = contextvars.ContextVar('request_headers')
 
-def is_remote_log():
-    if os.getenv('REMOTE_LOGGER') is not None:
+def is_remote_logger():
+    env_value = os.getenv('REMOTE_LOGGER', '').lower()
+    if env_value == 'true':
         logging.getLogger().info("Remote logger")
         return True
     else:
