@@ -38,3 +38,7 @@ async def process_data(request: Request, subscription: str = Path(...)):
         return JSONResponse(content={'error': f'Internal server error: {str(e)}'}, status_code=500)
 
     return JSONResponse(content={}, status_code=200)
+
+@server.get("/healthcheck")
+async def healthcheck():
+    return {"status": "ok"}
